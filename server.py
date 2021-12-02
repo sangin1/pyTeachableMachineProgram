@@ -34,11 +34,6 @@ class ClientThread(threading.Thread):
 
             sendString = str(round(prediction[0][0]*100,2))+'-'+str(round(prediction[0][1]*100,2))
             self.csocket.send(sendString.encode('utf-8'))
-                      
-            if not stringData:
-                connections.remove(c)
-                c.close()
-                break
             
 
 host = "127.0.0.1"
