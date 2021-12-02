@@ -1,10 +1,13 @@
 import tkinter.messagebox
 from tkinter import *
 from PIL import Image,ImageTk
-from tkinter import filedialog
-import PIL
+from tkinter import filedialog 
 import socket
+import PIL
+from PIL import Image, ImageOps
+import cv2
 import numpy
+import base64
 
 def open():
     global photo
@@ -12,21 +15,35 @@ def open():
     ('png files', '*.png'), ('jpg files', '*.jpg')))
     
     image = Image.open(filename)
-    image = image.resize((224,224),PIL.Image.ANTIALIAS)
+    size = (224, 224)
+    image = ImageOps.fit(image, size, Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(image)
     Label(root,image=photo).pack()
 
-    sock.send(photo.encode())
+    rgb_image = cv2.imread(filename)
+    dst = cv2.resize(rgb_image, dsize=(224, 224), interpolation=cv2.INTER_AREA)
 
-    a = sock.recv(1024).decode()
+    encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
+    result, imgencode = cv2.imencode('.jpg', dst, encode_param)
+    data = numpy.array(imgencode)
+    stringData = base64.b64encode(data)
+    length = str(len(stringData))
+    
+    sock.sendall(length.encode('utf-8').ljust(64))
+    sock.send(stringData)
+    
+    a = sock.recv(1024)
+    a = a.decode('utf-8')
+    
     water = a.split('-')[0]
     melon = a.split('-')[1]
 
     Label(root,text="수박"+water+"% 일치").pack()
-    Label(root,text="멜론"+water+"% 일치").pack()
+    Label(root,text="멜론"+melon+"% 일치").pack()
+ 
     
 def on_closing():
-    socket.close()
+    sock.close()
     root.destroy()
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
