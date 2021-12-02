@@ -33,11 +33,9 @@ class ClientThread(threading.Thread):
 host = "127.0.0.1"
 port = 5000
 
-
-
 server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
-server.bind(host,port)
+server.bind((host,port))
 
 while True:
     server.listen(1)
