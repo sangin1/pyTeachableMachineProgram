@@ -18,7 +18,9 @@ def open():
     size = (224, 224)
     image = ImageOps.fit(image, size, Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(image)
-    Label(root,image=photo).pack()
+    canvas.delete("all")
+    canvas.create_image(0,0,anchor='nw',image=photo)
+    canvas.image = photo
 
     rgb_image = cv2.imread(filename)
     dst = cv2.resize(rgb_image, dsize=(224, 224), interpolation=cv2.INTER_AREA)
@@ -37,9 +39,8 @@ def open():
     
     water = a.split('-')[0]
     melon = a.split('-')[1]
-
-    Label(root,text="수박"+water+"% 일치").pack()
-    Label(root,text="멜론"+melon+"% 일치").pack()
+    label2.configure(text = "수박"+water+"% 일치")
+    label3.configure(text = "멜론"+melon+"% 일치")
  
     
 def on_closing():
@@ -57,7 +58,12 @@ root.geometry("600x400+300+300")
 label1 = Label(root,text = "수박, 멜론사진을 올리면 판별합니다")
 label1.pack()
 
- 
+canvas = Canvas(height=224,width=224)
+canvas.pack()
+label2 = Label(root,text = "")
+label2.pack()
+label3 = Label(root,text = "")
+label3.pack()
 my_btn = Button(root, text='파일열기', command=open).pack()
 
 
