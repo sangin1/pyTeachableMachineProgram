@@ -1,3 +1,4 @@
+from keras.models import load_model
 import tensorflow.keras
 from PIL import Image, ImageOps
 import numpy as np
